@@ -17,7 +17,9 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
+import os
 from telethon import TelegramClient
+from telethon.sessions import StringSession
 from telethon.errors import FloodWaitError, RPCError
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -170,7 +172,12 @@ async def main() -> int:
     print(f"Период: последние {hours} ч. (с {cutoff.strftime('%d.%m.%Y %H:%M')})")
     print(f"Подключаюсь к Telegram...")
 
-    client = TelegramClient(str(SESSION_FILE), api_id, api_hash)
+    # Используем StringSession, если доступна; иначе, используем файл сессии
+    session_str = os.getenv("TELEGRAM_SESSION")
+    if session_str:
+        client = TelegramClient(StringSession(session_str), api_id, api_hash)
+    else:
+        client = TelegramClient(str(SESSION_FILE), api_id, api_hash)
 
     try:
         await client.connect()

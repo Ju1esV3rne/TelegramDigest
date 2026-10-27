@@ -1,0 +1,67 @@
+
+name: Digest
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install uv
+        run: python -m pip install uv
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Validate Telegram session secret
+        env:
+          TELEGRAM_SESSION: ${{ secrets.TELEGRAM_SESSION }}
+        shell: bash
+        run: |
+          if [[ -z "$TELEGRAM_SESSION" ]]; then
+            echo "::error::TELEGRAM_SESSION secret is missing or empty"
+            exit 1
+          fi
+
+      - name: Restore published state from cache
+        uses: actions/cache/restore@v4
+        with:
+          path: state/
+          key: state-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            state-${{ runner.os }}-
+
+      - name: Run digest and publish
+        env:
+          TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+          TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+          TELEGRAM_PHONE: ${{ secrets.TELEGRAM_PHONE }}
+          TELEGRAM_SESSION: ${{ secrets.TELEGRAM_SESSION }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_TARGET_CHAT_ID: ${{ secrets.TELEGRAM_TARGET_CHAT_ID }}
+        run: uv run python main.py --publish
+
+      - name: Save published state to cache
+        if: success()
+        uses: actions/cache/save@v4
+        with:
+          path: state/
+          key: state-${{ runner.os }}-${{ github.run_id }}

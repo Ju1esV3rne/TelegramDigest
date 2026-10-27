@@ -17,6 +17,7 @@
 - Python >= 3.14, зависимости в `pyproject.toml`, сборка `uv_build`. Проект использует `uv`.
 - `.env`: `TELEGRAM_API_ID`, `TELEGRAM_API_HASH` (+ опц. `TELEGRAM_PHONE`), `OPENROUTER_API_KEY`, опц. `OPENROUTER_MODEL` (по умолчанию `openai/gpt-4o-mini`), `TELEGRAM_BOT_TOKEN`, `TELEGRAM_TARGET_CHAT_ID`. `.env` в `.gitignore`.
 - `config.toml` задаёт чаты и период сбора.
+- **GitHub Actions:** Используется переменная окружения `TELEGRAM_SESSION` (строковый сеанс) — если она не пуста, клиент создаётся с `StringSession`, сохраняя файловую сессию (`telegram_qr_session`) локально для обычного использования.
 
 ## Запуск команд через shell
 - **Долгие команды** (`uv run python main.py`, `collect_messages.py`, с подключением к Telegram/OpenRouter) — всегда запускать с `timeout >= 300000` (5 минут). При VPN/нестабильной сети лучше 600000 (10 минут).

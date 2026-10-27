@@ -1,9 +1,11 @@
 """Обёртка над Telethon: подключение, авторизация, безопасное завершение."""
 
+import os
 import sys
 from pathlib import Path
 
 from telethon import TelegramClient
+from telethon.sessions import StringSession
 from telethon.errors import FloodWaitError, SessionPasswordNeededError
 
 from .config import (
@@ -32,12 +34,20 @@ async def create_client(code: str | None = None) -> TelegramClient:
     Если передан `code`, код подтверждения берётся из него, а не из консоли.
     Это нужно для неинтерактивного запуска.
     """
-    session_path = get_session_path()
-    client = TelegramClient(
-        str(session_path),
-        get_telegram_api_id(),
-        get_telegram_api_hash(),
-    )
+    session_str = os.getenv("TELEGRAM_SESSION")
+    if session_str:
+        client = TelegramClient(
+            StringSession(session_str),
+            get_telegram_api_id(),
+            get_telegram_api_hash(),
+        )
+    else:
+        session_path = get_session_path()
+        client = TelegramClient(
+            str(session_path),
+            get_telegram_api_id(),
+            get_telegram_api_hash(),
+        )
 
     phone = get_telegram_phone()
     if code:
