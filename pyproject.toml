@@ -1,0 +1,22 @@
+[project]
+name = "telegramdigest"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Ju1esV3rne", email = "g7au2ss@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "openai>=3.35.1",
+    "python-dotenv>=1.2.4",
+    "qrcode>=8.2",
+    "telethon>=1.45.0",
+]
+
+[project.scripts]
+telegramdigest = "telegramdigest:main"
+
+[build-system]
+requires = ["uv_build>=0.12.7,<0.13.0"]
+build-backend = "uv_build"

@@ -1,0 +1,29 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Secrets
+.env
+
+# Telethon session files (contain access tokens)
+sessions/
+*.session
+*.session-journal
+
+# Local state / logs
+state/
+*.log
+
+# Выгруженные данные (могут содержать личные данные жильцов)
+data/
+
+# Локальные настройки Claude Code (могут содержать токены)
+.claude/settings.json
+.claude/settings.local.json
