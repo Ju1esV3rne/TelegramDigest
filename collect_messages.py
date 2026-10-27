@@ -53,14 +53,8 @@ async def safe_disconnect(client: TelegramClient) -> None:
 
 def load_api_credentials() -> tuple[int, str]:
     """Читает API ID и API Hash из .env."""
-    if not ENV_FILE.exists():
-        raise SystemExit(
-            f"Файл {ENV_FILE} не найден.\n"
-            "Создайте его, скопировав .env.example, и впишите "
-            "TELEGRAM_API_ID и TELEGRAM_API_HASH."
-        )
-
-    load_dotenv(ENV_FILE)
+    if ENV_FILE.exists():
+        load_dotenv(ENV_FILE)
 
     api_id = os.getenv("TELEGRAM_API_ID", "").strip()
     api_hash = os.getenv("TELEGRAM_API_HASH", "").strip()
@@ -72,7 +66,7 @@ def load_api_credentials() -> tuple[int, str]:
         missing.append("TELEGRAM_API_HASH")
     if missing:
         raise SystemExit(
-            f"В файле {ENV_FILE} не заданы переменные: {', '.join(missing)}.\n"
+            f"Не заданы переменные: {', '.join(missing)}.\n"
             "Впишите их значения и запустите скрипт заново."
         )
 
